@@ -1,0 +1,6 @@
+<launch>
+    <rosparam command="load" file="$(find add_markers)/config/goal_zone_pose.yaml"/>
+    <node pkg="add_markers" type="add_markers" name="add_markers" output="screen">
+
+    </node>
+</launch>

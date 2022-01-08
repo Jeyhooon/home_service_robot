@@ -1,0 +1,17 @@
+pickup_zone:
+  px: 5
+  py: 0
+  pz: 0
+  ox: 0
+  oy: 0
+  oz: 0
+  ow: 1
+
+dropoff_zone:
+  px: -5
+  py: 0
+  pz: 0
+  ox: 0
+  oy: 0
+  oz: 0
+  ow: 1
