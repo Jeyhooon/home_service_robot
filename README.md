@@ -14,19 +14,19 @@ The project is about mapping, localizing and path planning for a mobile robot in
 * Initially the marker (i.e. virtual object to be picked up) is shown at the pickup zone.
 * Robot should drive to the pickup zone and marker should hide once the robot reaches there.
 * Robot should wait for 5 seconds to simulate a pickup.
-* Robot should drive to the dropoff zone and marker should drawn one the robot reaches there (to simulate a dropoff).
+* Robot should drive to the dropoff zone and marker should drawn once the robot reaches there (to simulate a dropoff).
 
 ### Implementation Details:
 For Mapping the environment, `gmapping` package is used while the robot is driven around manually; the generated map is saved using the [`map_saver`](http://wiki.ros.org/map_server) to the map folder (`maymap.pgm`, `mymap.yaml`).
 
-For localization, [`amcl`](http://wiki.ros.org/amcl) algorithm is used; initial guess for the robot pose is set to `(x=0, y=0, theta=0)` by moving around, robot updates its beliefs based on the laser scan and odometry data to localize itself in the environment. As shown in the figure below it's able to find it's position accurately!
+For localization, [`amcl`](http://wiki.ros.org/amcl) algorithm is used; initial guess for the robot pose is set to `(x=0, y=0, theta=0)` by moving around, robot updates its beliefs based on the laser scan and odometry data to localize itself in the environment.
 
 For planning, ROS navigation stack creates a path based on `Dijkstra's` algorithm, a variant of the `Uniform Cost Search` algorithm, while avoiding obstacles on its path.
 
 For communicating between `pick_objects` and `add_markers` nodes, [`ros_services`](http://wiki.ros.org/Services) is used. `add_markers` sends a request to `pick_objects` node to drive the robot to the specified location and waits for the response (whether it was successful or not).
 
 
-![images/localization.png](images/localization.png)
+![images/home_service_turtlebot.png](images/home_service_turtlebot.png)
 
 The structure of the project is shown below:
 
@@ -76,7 +76,7 @@ The robot is the TurtleBot2 consist of Kobuki base and a Kinect 3D camera.
 
 |               3D Model                |               RVis Visualization                |
 | :-----------------------------------: | :---------------------------------------------: |
-| ![images/robot.png](images/robot.png) | ![images/rviz_robot.png](images/rviz_robot.png) |
+| ![images/turtlebot2.png](images/turtlebot2.png) | ![images/turtlebot_rviz.png](images/turtlebot_rviz.png) |
 
 ## Getting Started
 
@@ -100,6 +100,10 @@ The robot is the TurtleBot2 consist of Kobuki base and a Kinect 3D camera.
   git clone https://github.com/turtlebot/turtlebot
   git clone https://github.com/turtlebot/turtlebot_interactions
   git clone https://github.com/turtlebot/turtlebot_simulator
+  ```
+- Modify the turtlebot gazebo launch file (at `src/turtlebot_simulator/turtlebot_gazebo/launch/turtlebot_world.launch`) to launch our custom world (modify `world_file` argument as below):
+  ```
+  <arg name="world_file" default="$(find add_markers)/../../world/myWorld.world"/>
   ```
 - Get back to the root directory: 
   ```
