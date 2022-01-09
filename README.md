@@ -1,12 +1,30 @@
-# where_am_i
+# home_service_robot
 
-Udacity's Robotic SW Engineer Course - Third Project: Where am I!
+Udacity's Robotic SW Engineer Course - Fifth Project: Home Service Robot!
 
-The project is about localizing a mobile robot in a gazebo world using [AMCL](http://wiki.ros.org/amcl) package (pre-defined map created from the world file). It consist of three packages: `my_robot` (creating the robot and the world), `pgm_map_creator` (to create a static map from the `.world` file), and `teleop_twist_keyboard` (for controlling the robot using keyboard).
+The project is about mapping, localizing and path planning for a mobile robot in a gazebo world. It consist of five packages:
+*  [`gmapping`](http://wiki.ros.org/gmapping): to perform SLAM and build a map of the environment with a robot equipped with laser range finder sensors or RGB-D cameras. 
+*  [`turtlebot_gazebo`](http://wiki.ros.org/turtlebot_gazebo): to deploy a turtlebot in a gazebo environement by linking a world file to it.
+* [`turtlebot_rviz_launchers`](http://wiki.ros.org/turtlebot_rviz_launchers): to load a pre-defined rviz workspace that will automatically load the robot model, trajectories and the map.
+* [`turtlebot_teleop`](http://wiki.ros.org/turtlebot_teleop): to manually control a robot using keyboard commands.
+* `pick_objects`: to plan and drive the robot to the goal positions to pickup/dropoff some virtual objects.
+* `add_markers`: to specify the pickup/dropoff zones for the robot and to draw them for visualization on rviz.
 
-Initial guess for robot location is (0, 0) by moving the robot around it updates its beliefs based on the laser scan and odometry data to localize itself in the environment. As shown in the figure below it's able to find it's position accurately!
+### Task:
+* Initially the marker (i.e. virtual object to be picked up) is shown at the pickup zone.
+* Robot should drive to the pickup zone and marker should hide once the robot reaches there.
+* Robot should wait for 5 seconds to simulate a pickup.
+* Robot should drive to the dropoff zone and marker should drawn one the robot reaches there (to simulate a dropoff).
 
-To change the parameters of the AMCL package check file in this directory: `src/my_robot/config/`
+### Implementation Details:
+For Mapping the environment, `gmapping` package is used while the robot is driven around manually; the generated map is saved using the [`map_saver`](http://wiki.ros.org/map_server) to the map folder (`maymap.pgm`, `mymap.yaml`).
+
+For localization, [`amcl`](http://wiki.ros.org/amcl) algorithm is used; initial guess for the robot pose is set to `(x=0, y=0, theta=0)` by moving around, robot updates its beliefs based on the laser scan and odometry data to localize itself in the environment. As shown in the figure below it's able to find it's position accurately!
+
+For planning, ROS navigation stack creates a path based on `Dijkstra's` algorithm, a variant of the `Uniform Cost Search` algorithm, while avoiding obstacles on its path.
+
+For communicating between `pick_objects` and `add_markers` nodes, [`ros_services`](http://wiki.ros.org/Services) is used. `add_markers` sends a request to `pick_objects` node to drive the robot to the specified location and waits for the response (whether it was successful or not).
+
 
 ![images/localization.png](images/localization.png)
 
@@ -14,53 +32,38 @@ The structure of the project is shown below:
 
 ### Project Structure
 
-    .where_am_i
     |
-    ├── my_robot                       # my_robot package
-    │   ├── config
-    │   │   ├── base_local_planner_params.yaml
-    │   │   ├── costmap_common_params.yaml
-    │   │   ├── global_costmap_params.yaml
-    │   │   ├── local_costmap_params.yaml
-    │   │   ├── localization.rviz
-    │   ├── launch
-    │   │   ├── amcl.launch
-    │   │   ├── robot_description.launch
-    │   │   ├── world.launch
-    │   ├── maps
-    │   │   ├── map.pgm
-    │   │   ├── map.yaml
-    │   ├── meshes
-    │   │   ├── hokuyo.dae
-    │   ├── urdf
-    │   │   ├── my_robot.gazebo
-    │   │   ├── my_robot.xacro
-    │   ├── world
-    │   │   ├── myWorld.world
-    │   ├── CMakeLists.txt
-    │   ├── package.xml
-    |   |
-    ├── pgm_map_creator                # pgm_map_creator package
-    │   ├── launch
-    │   │   ├── request_publisher.launch
-    │   ├── maps
-    │   │   ├── map.pgm
-    │   ├── msgs
-    │   │   ├── CMakeLists.txt
-    │   │   ├── collision_map_request.proto
-    │   ├── src
-    │   │   ├── collision_map_creator.cc
-    │   │   ├── request_publisher.cc
-    │   ├── world
-    │   │   ├── my_world.world
-    │   ├── CMakeLists.txt
-    │   ├── package.xml
-    |   |
-    ├── teleop_twist_keyboard           # teleop_twist_keyboard package
-    │   ├── teleop_twist_keyboard.py
-    │   ├── CMakeLists.txt
-    │   ├── package.xml
+    |
+    ├── slam_gmapping                       # gmapping_demo.launch file
+    │   ├── gmapping
+    │   ├── ...
+
+    ├── turtlebot                           # keyboard_teleop.launch file
+    │   ├── turtlebot_teleop
+    │   ├── ...
+    ├── turtlebot_interactions              # view_navigation.launch file
+    │   ├── turtlebot_rviz_launchers
+    │   ├── ...
+    ├── turtlebot_simulator                 # turtlebot_world.launch file
+    │   ├── turtlebot_gazebo
+    │   ├── ...
+    |
+    ├── pick_objects                        # pick_objects C++ node
+    │   ├── src/pick_objects.cpp
+    │   ├── ...
+    ├── add_markers                         # add_marker C++ node
+    │   ├── src/add_markers.cpp
+    │   ├── ...
+    ├── map                                 # map files
+    │   ├── ...
+    ├── world                               # myWorld.world file
+    │   ├── ...
+    ├── scripts                             # shell script files
+    │   ├── ...
+    ├── rvizConfig                          # rviz configuration files
+    │   ├── ...
     └──
+    
 
 ### World
 
@@ -69,7 +72,7 @@ The world is consist of mainly the office floor which the plan is taken from [ro
 
 ### Robot
 
-The robot consist of differential drive (to drive the two wheels), a lidar (hokuyo lidar), and a camera which are added using Gazebo plugins.
+The robot is the TurtleBot2 consist of Kobuki base and a Kinect 3D camera.
 
 |               3D Model                |               RVis Visualization                |
 | :-----------------------------------: | :---------------------------------------------: |
@@ -77,19 +80,39 @@ The robot consist of differential drive (to drive the two wheels), a lidar (hoku
 
 ## Getting Started
 
-### Pre-requisites
+- Create a `catkin_ws` directory and `cd` to it:
+  ```
+  mkdir catkin_ws
+  cd catkin_ws
+  ```
+- Clone this repo inside `catkin_ws`:
 
-To compile map creator we need to install the following libraries:
-
-```
-sudo apt-get install libignition-math2-dev protobuf-compiler
-```
-
-- Clone this repo to your local drive:
-  `git clone https://github.com/Jeyhooon/where_am_i_-kinetic-.git`
-- Change directory to the copied repo: e.g.: `cd ~/git/where_am_i_-kinetic-`
-- `catkin_make`
-- `source devel/setup.bash`
-- Run `roslaunch my_robot world.launch` (this only lunches the world and the robot)
-- Open and source new terminal then run `roslaunch my_robot amcl.launch` (this launches the map_server node, amcl node and move_base node (in case want to give a goal position to robot) )
-- Open and source new terminal then run `roslaunch teleop_twist_keyboard teleop_twist_keyboard.py` (this would allow you to control the robot using keyboard in case don't want to use the move_base package)
+  ```
+  git clone https://github.com/Jeyhooon/home_service_robot.git
+  ```
+- Change directory to the `src` folder:
+  ```
+  cd src
+  ```
+- Clone other required packages:
+  ```
+  git clone https://github.com/ros-perception/slam_gmapping
+  git clone https://github.com/turtlebot/turtlebot
+  git clone https://github.com/turtlebot/turtlebot_interactions
+  git clone https://github.com/turtlebot/turtlebot_simulator
+  ```
+- Get back to the root directory: 
+  ```
+  cd ..
+  catkin_make
+  source devel/setup.bash
+  ```
+- Give execution permission to the bash script in the scripts folder:
+  ```
+  chmod +x src/scripts/home_service.sh
+  ```
+- Now, to launch the project, run this scripts:
+  ```
+  bash src/scripts/home_service.sh
+  ```
+  It launches all the required nodes one by one in their own terminal.
