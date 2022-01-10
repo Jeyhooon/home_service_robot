@@ -101,10 +101,6 @@ The robot is the TurtleBot2 consist of Kobuki base and a Kinect 3D camera.
   git clone https://github.com/turtlebot/turtlebot_interactions
   git clone https://github.com/turtlebot/turtlebot_simulator
   ```
-- Modify the turtlebot gazebo launch file (at `src/turtlebot_simulator/turtlebot_gazebo/launch/turtlebot_world.launch`) to launch our custom world (modify `world_file` argument as below):
-  ```
-  <arg name="world_file" default="$(find add_markers)/../../world/myWorld.world"/>
-  ```
 - Get back to the root directory: 
   ```
   cd ..
