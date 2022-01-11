@@ -85,25 +85,13 @@ The robot is the TurtleBot2 consist of Kobuki base and a Kinect 3D camera.
   mkdir catkin_ws
   cd catkin_ws
   ```
-- Clone this repo inside `catkin_ws`:
+- Clone this repo inside `catkin_ws` recursively to download other required submodules as well:
 
   ```
-  git clone https://github.com/Jeyhooon/home_service_robot.git
+  git clone --recurse-submodules -j4 https://github.com/Jeyhooon/home_service_robot.git
   ```
-- Change directory to the `src` folder:
+- While at the root directory: 
   ```
-  cd src
-  ```
-- Clone other required packages:
-  ```
-  git clone https://github.com/ros-perception/slam_gmapping
-  git clone https://github.com/turtlebot/turtlebot
-  git clone https://github.com/turtlebot/turtlebot_interactions
-  git clone https://github.com/turtlebot/turtlebot_simulator
-  ```
-- Get back to the root directory: 
-  ```
-  cd ..
   catkin_make
   source devel/setup.bash
   ```
