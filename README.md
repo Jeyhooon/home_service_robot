@@ -37,7 +37,6 @@ The structure of the project is shown below:
     ├── slam_gmapping                       # gmapping_demo.launch file
     │   ├── gmapping
     │   ├── ...
-
     ├── turtlebot                           # keyboard_teleop.launch file
     │   ├── turtlebot_teleop
     │   ├── ...
