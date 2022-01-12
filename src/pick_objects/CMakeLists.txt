@@ -210,6 +210,6 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(move_robot src/move_robot.cpp)
-target_link_libraries(move_robot ${catkin_LIBRARIES})
-add_dependencies(move_robot pick_objects_generate_messages_cpp)
+add_executable(pick_objects src/pick_objects.cpp)
+target_link_libraries(pick_objects ${catkin_LIBRARIES})
+add_dependencies(pick_objects pick_objects_generate_messages_cpp)
